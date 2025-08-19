@@ -46,3 +46,4 @@ If this feature involves UI changes, please describe your design preferences:
 ---
 
 **Thank you for helping us make the Butterfly Classification Ecosystem even better! 🦋✨**
+

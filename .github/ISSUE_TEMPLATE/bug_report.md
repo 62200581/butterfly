@@ -44,3 +44,4 @@ If you have suggestions on a fix for the bug, please describe it here.
 ---
 
 **Thank you for helping us improve the Butterfly Classification Ecosystem! 🦋**
+
