@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Administration - Butterfly Ecosystem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: 800;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 12px 20px !important;
+            margin: 0 5px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .stats-card {
+            transition: transform 0.2s;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        .species-table {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .health-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .health-healthy { background-color: #28a745; }
+        .health-warning { background-color: #ffc107; }
+        .health-critical { background-color: #dc3545; }
+        .search-highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+        
+        /* Enhanced body background */
+        body {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Enhanced cards and containers */
+        .card, .stats-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before, .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.6s ease;
+        }
+        
+        .card:hover::before, .stats-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card:hover, .stats-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        /* Enhanced buttons */
+        .btn {
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        /* Enhanced form controls */
+        .form-control, .form-select {
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        /* Enhanced table styling */
+        .table {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .table thead th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: scale(1.01);
+        }
+        
+        /* Enhanced health indicators */
+        .health-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .health-healthy { 
+            background-color: #28a745;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4);
+        }
+        .health-warning { 
+            background-color: #ffc107;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+        }
+        .health-critical { 
+            background-color: #dc3545;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* Enhanced search highlight */
+        .search-highlight {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 4px;
+            animation: highlightPulse 1s ease-in-out;
+        }
+        
+        @keyframes highlightPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Enhanced navbar toggler */
+        .navbar-toggler {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-toggler:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-butterfly me-2"></i> Butterfly Classification
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+                <a class="nav-link" href="/classify">Classify</a>
+                <a class="nav-link active" href="/database">Database</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">
+                    <i class="fas fa-database"></i> Database Administration
+                </h1>
+            </div>
+        </div>
+
+        <!-- System Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-bug fa-3x mb-2"></i>
+                        <h5 class="card-title">Total Species</h5>
+                        <h3 id="total-species">-</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x mb-2"></i>
+                        <h5 class="card-title">Training Epochs</h5>
+                        <h3 id="total-epochs">-</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-images fa-3x mb-2"></i>
+                        <h5 class="card-title">Classifications</h5>
+                        <h3 id="total-classifications">-</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-hdd fa-3x mb-2"></i>
+                        <h5 class="card-title">Database Size</h5>
+                        <h3 id="db-size">-</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Health Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-heartbeat"></i> Database Health Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="health-indicator health-healthy" id="health-indicator"></span>
+                                    <strong>Status: </strong>
+                                    <span id="health-status" class="ms-2">Loading...</span>
+                                </div>
+                                <div id="health-recommendations"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-outline-primary btn-sm" onclick="refreshHealth()">
+                                    <i class="fas fa-sync-alt"></i> Refresh Health
+                                </button>
+                                <button class="btn btn-outline-success btn-sm ms-2" onclick="exportData()">
+                                    <i class="fas fa-download"></i> Export Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Species Management -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-bug"></i> Species Management</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSpeciesModal">
+                            <i class="fas fa-plus"></i> Add Species
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="searchSpecies" placeholder="Search species...">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="searchSpecies()">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span class="text-muted">Showing <span id="species-count">0</span> species</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive species-table">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Scientific Name</th>
+                                        <th>Common Name</th>
+                                        <th>Family</th>
+                                        <th>Genus</th>
+                                        <th>Conservation</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="species-table-body">
+                                    <tr>
+                                        <td colspan="7" class="text-center">Loading species...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Classifications -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history"></i> Recent Classifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Species</th>
+                                        <th>Confidence</th>
+                                        <th>Processing Time</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classifications-table-body">
+                                    <tr>
+                                        <td colspan="5" class="text-center">Loading classifications...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Species Modal -->
+    <div class="modal fade" id="addSpeciesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Species</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSpeciesForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Scientific Name *</label>
+                                    <input type="text" class="form-control" id="scientificName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Common Name</label>
+                                    <input type="text" class="form-control" id="commonName">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Family</label>
+                                    <input type="text" class="form-control" id="family">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Genus</label>
+                                    <input type="text" class="form-control" id="genus">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Habitat</label>
+                                    <textarea class="form-control" id="habitat" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Distribution</label>
+                                    <textarea class="form-control" id="distribution" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Conservation Status</label>
+                                    <select class="form-select" id="conservationStatus">
+                                        <option value="">Select status</option>
+                                        <option value="Least Concern">Least Concern</option>
+                                        <option value="Near Threatened">Near Threatened</option>
+                                        <option value="Vulnerable">Vulnerable</option>
+                                        <option value="Endangered">Endangered</option>
+                                        <option value="Critically Endangered">Critically Endangered</option>
+                                        <option value="Extinct">Extinct</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addSpecies()">Add Species</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Species Modal -->
+    <div class="modal fade" id="editSpeciesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Species</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editSpeciesForm">
+                        <input type="hidden" id="editSpeciesId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Scientific Name</label>
+                                    <input type="text" class="form-control" id="editScientificName" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Common Name</label>
+                                    <input type="text" class="form-control" id="editCommonName">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Family</label>
+                                    <input type="text" class="form-control" id="editFamily">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Genus</label>
+                                    <input type="text" class="form-control" id="editGenus">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Habitat</label>
+                                    <textarea class="form-control" id="editHabitat" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Distribution</label>
+                                    <textarea class="form-control" id="editDistribution" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Conservation Status</label>
+                                    <select class="form-select" id="editConservationStatus">
+                                        <option value="Least Concern">Least Concern</option>
+                                        <option value="Near Threatened">Near Threatened</option>
+                                        <option value="Vulnerable">Vulnerable</option>
+                                        <option value="Endangered">Endangered</option>
+                                        <option value="Critically Endangered">Critically Endangered</option>
+                                        <option value="Extinct">Extinct</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="updateSpecies()">Update Species</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentSpecies = [];
+        let currentClassifications = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemOverview();
+            loadSpecies();
+            loadClassifications();
+            loadHealthStatus();
+        });
+
+        // Load system overview
+        async function loadSystemOverview() {
+            try {
+                const response = await fetch('/api/training-summary');
+                const data = await response.json();
+                
+                document.getElementById('total-species').textContent = data.total_species || 0;
+                document.getElementById('total-epochs').textContent = data.total_epochs || 0;
+                document.getElementById('total-classifications').textContent = data.total_classifications || 0;
+                document.getElementById('db-size').textContent = (data.database_size_mb || 0) + ' MB';
+            } catch (error) {
+                console.error('Error loading system overview:', error);
+            }
+        }
+
+        // Load species data
+        async function loadSpecies() {
+            try {
+                const response = await fetch('/api/species');
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentSpecies = result.data;
+                    displaySpecies(currentSpecies);
+                } else {
+                    console.error('Error loading species:', result.message);
+                }
+            } catch (error) {
+                console.error('Error loading species:', error);
+            }
+        }
+
+        // Display species in table
+        function displaySpecies(species) {
+            const tbody = document.getElementById('species-table-body');
+            document.getElementById('species-count').textContent = species.length;
+            
+            if (species.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No species found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = species.map(s => `
+                <tr>
+                    <td>${s.id}</td>
+                    <td><strong>${s.scientific_name}</strong></td>
+                    <td>${s.common_name || '-'}</td>
+                    <td>${s.family || '-'}</td>
+                    <td>${s.genus || '-'}</td>
+                    <td><span class="badge bg-secondary">${s.conservation_status || 'Unknown'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editSpecies(${s.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteSpecies(${s.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Search species
+        async function searchSpecies() {
+            const query = document.getElementById('searchSpecies').value.trim();
+            
+            if (!query) {
+                displaySpecies(currentSpecies);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/species/search?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displaySpecies(result.data);
+                } else {
+                    console.error('Error searching species:', result.message);
+                }
+            } catch (error) {
+                console.error('Error searching species:', error);
+            }
+        }
+
+        // Load classifications
+        async function loadClassifications() {
+            try {
+                const response = await fetch('/api/classifications?limit=10');
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentClassifications = result.data;
+                    displayClassifications(currentClassifications);
+                } else {
+                    console.error('Error loading classifications:', result.message);
+                }
+            } catch (error) {
+                console.error('Error loading classifications:', error);
+            }
+        }
+
+        // Display classifications
+        function displayClassifications(classifications) {
+            const tbody = document.getElementById('classifications-table-body');
+            
+            if (classifications.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No classifications found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = classifications.map(c => `
+                <tr>
+                    <td><code>${c.image_filename}</code></td>
+                    <td>${c.scientific_name || 'Unknown'}</td>
+                    <td><span class="badge bg-info">${(c.confidence_score * 100).toFixed(1)}%</span></td>
+                    <td>${c.processing_time || 'N/A'}s</td>
+                    <td>${new Date(c.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Load health status
+        async function loadHealthStatus() {
+            try {
+                const response = await fetch('/api/database/stats');
+                const data = await response.json();
+                
+                const health = data.health;
+                const indicator = document.getElementById('health-indicator');
+                const status = document.getElementById('health-status');
+                const recommendations = document.getElementById('health-recommendations');
+                
+                // Update health indicator
+                indicator.className = `health-indicator health-${health.status}`;
+                status.textContent = health.status.toUpperCase();
+                
+                // Update recommendations
+                if (health.recommendations && health.recommendations.length > 0) {
+                    recommendations.innerHTML = '<strong>Recommendations:</strong><br>' + 
+                        health.recommendations.map(r => `• ${r}`).join('<br>');
+                } else {
+                    recommendations.innerHTML = '<span class="text-success">All systems operational</span>';
+                }
+            } catch (error) {
+                console.error('Error loading health status:', error);
+            }
+        }
+
+        // Refresh health status
+        function refreshHealth() {
+            loadHealthStatus();
+        }
+
+        // Export data
+        function exportData() {
+            const table = prompt('Enter table name to export (species, training_metrics, classification_history):', 'species');
+            if (table) {
+                window.open(`/api/database/export/${table}?format=csv&backup=true`, '_blank');
+            }
+        }
+
+        // Add species
+        async function addSpecies() {
+            const formData = {
+                scientific_name: document.getElementById('scientificName').value,
+                common_name: document.getElementById('commonName').value,
+                family: document.getElementById('family').value,
+                genus: document.getElementById('genus').value,
+                habitat: document.getElementById('habitat').value,
+                distribution: document.getElementById('distribution').value,
+                conservation_status: document.getElementById('conservationStatus').value,
+                description: document.getElementById('description').value
+            };
+            
+            try {
+                const response = await fetch('/api/species', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Species added successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('addSpeciesModal')).hide();
+                    document.getElementById('addSpeciesForm').reset();
+                    loadSpecies();
+                    loadSystemOverview();
+                } else {
+                    alert('Error adding species: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error adding species:', error);
+                alert('Error adding species');
+            }
+        }
+
+        // Edit species
+        function editSpecies(speciesId) {
+            const species = currentSpecies.find(s => s.id === speciesId);
+            if (!species) return;
+            
+            document.getElementById('editSpeciesId').value = species.id;
+            document.getElementById('editScientificName').value = species.scientific_name;
+            document.getElementById('editCommonName').value = species.common_name || '';
+            document.getElementById('editFamily').value = species.family || '';
+            document.getElementById('editGenus').value = species.genus || '';
+            document.getElementById('editHabitat').value = species.habitat || '';
+            document.getElementById('editDistribution').value = species.distribution || '';
+            document.getElementById('editConservationStatus').value = species.conservation_status || '';
+            document.getElementById('editDescription').value = species.description || '';
+            
+            new bootstrap.Modal(document.getElementById('editSpeciesModal')).show();
+        }
+
+        // Update species
+        async function updateSpecies() {
+            const speciesId = document.getElementById('editSpeciesId').value;
+            const formData = {
+                common_name: document.getElementById('editCommonName').value,
+                family: document.getElementById('editFamily').value,
+                genus: document.getElementById('editGenus').value,
+                habitat: document.getElementById('editHabitat').value,
+                distribution: document.getElementById('editDistribution').value,
+                conservation_status: document.getElementById('editConservationStatus').value,
+                description: document.getElementById('editDescription').value
+            };
+            
+            try {
+                const response = await fetch(`/api/species/${speciesId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Species updated successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('editSpeciesModal')).hide();
+                    loadSpecies();
+                } else {
+                    alert('Error updating species: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error updating species:', error);
+                alert('Error updating species');
+            }
+        }
+
+        // Delete species
+        async function deleteSpecies(speciesId) {
+            if (!confirm('Are you sure you want to delete this species?')) return;
+            
+            try {
+                const response = await fetch(`/api/species/${speciesId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Species deleted successfully!');
+                    loadSpecies();
+                    loadSystemOverview();
+                } else {
+                    alert('Error deleting species: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error deleting species:', error);
+                alert('Error deleting species');
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchSpecies').addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                displaySpecies(currentSpecies);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦋 Butterfly Classification Ecosystem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a4c93;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .feature-action {
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-action {
+            opacity: 1;
+        }
+        
+        .feature-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .btn-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-custom:hover::before {
+            left: 100%;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            color: white;
+        }
+        
+        .stats-section {
+            background: var(--secondary-color);
+            padding: 80px 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-top: 10px;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: 800;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 12px 20px !important;
+            margin: 0 5px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-toggler:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        
+        /* Enhanced animations and effects */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/><circle cx="20" cy="20" r="0.5" fill="white" opacity="0.05"/><circle cx="80" cy="80" r="0.8" fill="white" opacity="0.08"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .hero-title {
+            animation: slideInUp 1s ease-out;
+        }
+        
+        .hero-subtitle {
+            animation: slideInUp 1s ease-out 0.3s both;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .feature-card {
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        .footer {
+            background: var(--text-color);
+            color: white;
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-butterfly me-2"></i>
+                Butterfly Classification
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/classify">Classify</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/database">Database</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Particles Background -->
+    <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+    
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="hero-title">🦋 Butterfly Classification Ecosystem</h1>
+                    <p class="hero-subtitle">
+                        Advanced machine learning platform for identifying and studying butterflies and moths. 
+                        From data analysis to real-time classification, discover the world of lepidoptera like never before.
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="/dashboard" class="btn btn-custom btn-lg">
+                            <i class="fas fa-chart-line me-2"></i>View Dashboard
+                        </a>
+                        <a href="/classify" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-camera me-2"></i>Classify Image
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="display-4 fw-bold text-white mb-3">What We Offer</h2>
+                    <p class="lead text-white-50">Comprehensive tools for butterfly research and identification</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card text-center" onclick="navigateToFeature('dashboard')" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Advanced Analytics</h4>
+                        <p>Comprehensive training analysis with interactive visualizations, overfitting detection, and performance insights.</p>
+                        <div class="feature-action">
+                            <span class="badge bg-primary">Click to Explore</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card text-center" onclick="navigateToFeature('database')" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4>ML Model Optimization</h4>
+                        <p>Hyperparameter tuning, transfer learning, and ensemble methods to improve classification accuracy.</p>
+                        <div class="feature-action">
+                            <span class="badge bg-success">Click to Explore</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card text-center" onclick="navigateToFeature('classify')" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h4>Real-time Classification</h4>
+                        <p>Upload butterfly images and get instant species identification with confidence scores and detailed information.</p>
+                        <div class="feature-action">
+                            <span class="badge bg-warning">Click to Explore</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card text-center" onclick="showFeatureInfo('mobile')" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4>Mobile Responsive</h4>
+                        <p>Access the platform from any device with our beautiful, responsive web interface.</p>
+                        <div class="feature-action">
+                            <span class="badge bg-info">Learn More</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card text-center" onclick="navigateToFeature('database')" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h4>Species Database</h4>
+                        <p>Comprehensive information about butterfly and moth species, including conservation status and habitat details.</p>
+                        <div class="feature-action">
+                            <span class="badge bg-primary">Click to Explore</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card text-center" onclick="navigateToFeature('dashboard')" style="cursor: pointer;">
+                        <div class="feature-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h4>Research Tools</h4>
+                        <p>Advanced tools for researchers, including data preprocessing, model interpretability, and export capabilities.</p>
+                        <div class="feature-action">
+                            <span class="badge bg-success">Click to Explore</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <!-- Database Status Indicator -->
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-database me-2"></i>
+                        <strong>Database Status:</strong> 
+                        <span id="dbStatus">🔄 Connecting...</span>
+                        <span id="dbSize" class="ms-3"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row text-center">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalEpochs">15</div>
+                        <div class="stat-label">Training Epochs</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="finalAccuracy">99.7%</div>
+                        <div class="stat-label">Final Accuracy</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="speciesCount">100+</div>
+                        <div class="stat-label">Species Supported</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="modelPerformance">96.8%</div>
+                        <div class="stat-label">Validation Accuracy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h5><i class="fas fa-butterfly me-2"></i>ButterflyAI</h5>
+                    <p>Advancing butterfly research through artificial intelligence and machine learning.</p>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                    <p>&copy; 2024 Butterfly Classification Ecosystem. All rights reserved.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-white me-3"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Load real-time database stats
+        async function loadRealTimeStats() {
+            try {
+                // Check database health first
+                const healthResponse = await fetch('/health');
+                const healthData = await healthResponse.json();
+                
+                if (healthData.status === 'healthy') {
+                    document.getElementById('dbStatus').innerHTML = '🟢 Connected';
+                    document.getElementById('dbStatus').className = 'text-success';
+                    if (healthData.database) {
+                        document.getElementById('dbSize').textContent = `(${healthData.database.size_mb} MB)`;
+                    }
+                } else {
+                    document.getElementById('dbStatus').innerHTML = '🔴 Disconnected';
+                    document.getElementById('dbStatus').className = 'text-danger';
+                }
+                
+                const response = await fetch('/api/training-summary');
+                const data = await response.json();
+                
+                if (data.total_epochs) {
+                    document.getElementById('totalEpochs').textContent = data.total_epochs;
+                    document.getElementById('finalAccuracy').textContent = data.final_accuracy || '99.7%';
+                    document.getElementById('speciesCount').textContent = data.total_species || '15';
+                    document.getElementById('modelPerformance').textContent = data.validation_accuracy || '96.8%';
+                }
+                
+                // Load species count from database
+                const speciesResponse = await fetch('/api/species');
+                const speciesData = await speciesResponse.json();
+                if (speciesData.data) {
+                    document.getElementById('speciesCount').textContent = speciesData.data.length;
+                }
+                
+                // Load classification count
+                const classResponse = await fetch('/api/classifications');
+                const classData = await classResponse.json();
+                if (classData.data) {
+                    // Update stats to show real classification count
+                    const totalClassifications = classData.data.length;
+                    if (totalClassifications > 0) {
+                        document.getElementById('modelPerformance').textContent = totalClassifications + ' Classifications';
+                    }
+                }
+                
+            } catch (error) {
+                console.log('Error loading real-time stats:', error);
+                document.getElementById('dbStatus').innerHTML = '🔴 Error';
+                document.getElementById('dbStatus').className = 'text-danger';
+                // Fallback to default values
+                document.getElementById('totalEpochs').textContent = '15';
+                document.getElementById('finalAccuracy').textContent = '99.7%';
+                document.getElementById('speciesCount').textContent = '15';
+                document.getElementById('modelPerformance').textContent = '96.8%';
+            }
+        }
+        
+        // Load stats when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRealTimeStats();
+            addEnhancedAnimations();
+        });
+        
+        // Refresh stats every 30 seconds
+        setInterval(loadRealTimeStats, 30000);
+        
+        // Initialize particles background
+        if (typeof particlesJS !== 'undefined') {
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#ffffff'
+                    },
+                    shape: {
+                        type: 'circle',
+                        stroke: {
+                            width: 0,
+                            color: '#000000'
+                        }
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: false,
+                        anim: {
+                            enable: false,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 40,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#ffffff',
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 6,
+                        direction: 'none',
+                        random: false,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'repulse'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 400,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        bubble: {
+                            distance: 400,
+                            size: 40,
+                            duration: 2,
+                            opacity: 8,
+                            speed: 3
+                        },
+                        repulse: {
+                            distance: 200,
+                            duration: 0.4
+                        },
+                        push: {
+                            particles_nb: 4
+                        },
+                        remove: {
+                            particles_nb: 2
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        }
+        
+        // Add enhanced animations
+        function addEnhancedAnimations() {
+            // Add parallax effect to hero section
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection) {
+                window.addEventListener('scroll', () => {
+                    const scrolled = window.pageYOffset;
+                    const rate = scrolled * -0.3;
+                    heroSection.style.transform = `translateY(${rate}px)`;
+                });
+            }
+            
+            // Add scroll-triggered animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe feature cards for animation
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+        }
+        
+        // Feature navigation functions
+        function navigateToFeature(feature) {
+            switch(feature) {
+                case 'dashboard':
+                    window.location.href = '/dashboard';
+                    break;
+                case 'classify':
+                    window.location.href = '/classify';
+                    break;
+                case 'database':
+                    window.location.href = '/database';
+                    break;
+                default:
+                    console.log('Unknown feature:', feature);
+            }
+        }
+        
+        function showFeatureInfo(feature) {
+            let message = '';
+            let title = '';
+            
+            switch(feature) {
+                case 'mobile':
+                    title = 'Mobile Responsive Design';
+                    message = 'Our platform is fully responsive and works seamlessly on all devices:\n\n' +
+                             '📱 Smartphones and tablets\n' +
+                             '💻 Desktop and laptop computers\n' +
+                             '🖥️ Large displays and monitors\n\n' +
+                             'The interface automatically adapts to provide the best user experience on any screen size.';
+                    break;
+                case 'research':
+                    title = 'Advanced Research Tools';
+                    message = 'Professional tools for researchers and scientists:\n\n' +
+                             '🔬 Data preprocessing and cleaning\n' +
+                             '📊 Model interpretability analysis\n' +
+                             '📈 Performance metrics and visualization\n' +
+                             '💾 Data export in multiple formats\n' +
+                             '🔄 Model versioning and comparison\n\n' +
+                             'Built for serious research and academic use.';
+                    break;
+                default:
+                    title = 'Feature Information';
+                    message = 'This feature provides advanced capabilities for butterfly research and classification.';
+            }
+            
+            // Create and show modal
+            showFeatureModal(title, message);
+        }
+        
+        function showFeatureModal(title, message) {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('featureModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal fade" id="featureModal" tabindex="-1" aria-labelledby="featureModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="featureModalLabel">${title}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-3">
+                                    <i class="fas fa-info-circle text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <div style="white-space: pre-line; font-size: 1.1rem; line-height: 1.6;">
+                                    ${message}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="exploreFeature('${title}')">Explore More</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('featureModal'));
+            modal.show();
+        }
+        
+        function exploreFeature(featureTitle) {
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('featureModal'));
+            modal.hide();
+            
+            // Navigate based on feature
+            if (featureTitle.includes('Mobile')) {
+                // Show mobile demo or scroll to responsive section
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } else if (featureTitle.includes('Research')) {
+                // Navigate to dashboard for research tools
+                window.location.href = '/dashboard';
+            }
+        }
+    </script>
+</body>
+</html>
